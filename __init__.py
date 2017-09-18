@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: <encoding name> -*-
 from flask import Flask, request
-from hashlib import sha1
+import hashlib
 
 app = Flask(__name__)
 
@@ -14,10 +14,10 @@ def hello_world():
     echostr = request.args.get("echostr", "")
     token = "LongAsHeLives"
 
-    list = [token, timestamp, nonce]
-    list.sort()
-    sha1 = sha1()
-    map(sha1.update, list)
+    args = [token, timestamp, nonce]
+    args.sort()
+    sha1 = hashlib.sha1()
+    map(sha1.update, args)
     hashcode = sha1.hexdigest()
     if hashcode == signature:
         return echostr
