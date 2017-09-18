@@ -14,6 +14,11 @@ def hello_world():
     echostr = request.args.get("echostr", "")
     token = "LongAsHeLives"
 
+    app.logger.debug(signature)
+    app.logger.debug(timestamp)
+    app.logger.debug(nonce)
+    app.logger.debug(echostr)
+
     args = [token, timestamp, nonce]
     args.sort()
     sha1 = hashlib.sha1()
