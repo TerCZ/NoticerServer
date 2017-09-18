@@ -30,7 +30,11 @@ def hello_world():
     # else:
     #     return ""
 
+<<<<<<< HEAD
     return s
+=======
+    return str(request.form) + "\n" + str(request.args)
+>>>>>>> aa0d94030947c568844f79402abd180e10d56c35
 
 if __name__ == "__main__":
     app.run()
