@@ -8,11 +8,14 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello_world():
+<<<<<<< HEAD
     s = request["signature"]
     s += request["timestamp"]
     s += request["nonce"]
     s += request["echostr"]
 
+=======
+>>>>>>> aa0d94030947c568844f79402abd180e10d56c35
     # signature = data.signature
     # timestamp = data.timestamp
     # nonce = data.nonce
@@ -30,7 +33,11 @@ def hello_world():
     # else:
     #     return ""
 
+<<<<<<< HEAD
     return s
+=======
+    return str(request.form) + "\n" + str(request.args)
+>>>>>>> aa0d94030947c568844f79402abd180e10d56c35
 
 if __name__ == "__main__":
     app.run()
