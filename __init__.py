@@ -8,10 +8,10 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello_world():
-    s = request["signature"]
-    s += request["timestamp"]
-    s += request["nonce"]
-    s += request["echostr"]
+    s = request.form["signature"]
+    s += request.form["timestamp"]
+    s += request.form["nonce"]
+    s += request.form["echostr"]
 
     # signature = data.signature
     # timestamp = data.timestamp
