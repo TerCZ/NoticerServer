@@ -8,11 +8,10 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello_world():
-    app.logger.debug(request.form)
-    app.logger.debug(request.args)
-    print(request.form)
-    print(request.args)
-
+    s = request["signature"]
+    s += request["timestamp"]
+    s += request["nonce"]
+    s += request["echostr"]
 
     # signature = data.signature
     # timestamp = data.timestamp
@@ -31,8 +30,7 @@ def hello_world():
     # else:
     #     return ""
 
-    return 'Hello, World!'
+    return s
 
 if __name__ == "__main__":
     app.run()
-
