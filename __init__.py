@@ -8,12 +8,6 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello_world():
-    app.logger.debug(request.form)
-    app.logger.debug(request.args)
-    print(request.form)
-    print(request.args)
-
-
     # signature = data.signature
     # timestamp = data.timestamp
     # nonce = data.nonce
@@ -31,8 +25,7 @@ def hello_world():
     # else:
     #     return ""
 
-    return 'Hello, World!'
+    return str(request.form) + "\n" + str(request.args)
 
 if __name__ == "__main__":
     app.run()
-
