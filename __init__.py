@@ -3,7 +3,7 @@
 import logging
 
 from flask import Flask, request
-from .util import is_from_wechat
+from .util import is_from_wechat, is_from_wechat2
 
 app = Flask(__name__)
 
@@ -24,11 +24,12 @@ def hello_world():
 
 @app.route("/", methods=["POST"])
 def receive_text():
-    signature = request.args.get("signature", "")
-    timestamp = request.args.get("timestamp", "")
-    nonce = request.args.get("nonce", "")
+    # signature = request.args.get("signature", "")
+    # timestamp = request.args.get("timestamp", "")
+    # nonce = request.args.get("nonce", "")
 
-    if not is_from_wechat(signature=signature, timestamp=timestamp, nonce=nonce):
+    if not is_from_wechat2(request):
+        logging.error("Fail to identify request at WeChat request")
         return "这不是微信请求呢"
 
     logging.debug(request.args)
