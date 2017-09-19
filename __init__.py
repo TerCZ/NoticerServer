@@ -25,5 +25,21 @@ def hello_world():
         return "这不是微信请求呢"
 
 
+@app.route("/", methods=["POST"])
+def receive_text():
+    to_user_name = request.form.get("ToUserName", "")
+    from_user_name = request.form.get("FromUserName", "")
+    create_time = request.form.get("CreateTime", "")
+    msg_type = request.form.get("MsgType", "")
+    if msg_type == "text":
+        content = request.form.get("Content", "")
+        msg_id = request.form.get("MsgId", "")
+
+        app.logger.debug("ToUserName: {}\tFromUserName: {}\tCreateTime: {}\tMsgType: {}\tContent: {}\tMsgId: {}\t".format(
+            to_user_name, from_user_name, create_time, content, msg_id))
+
+    return "success"
+
+
 if __name__ == "__main__":
     app.run()
