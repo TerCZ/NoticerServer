@@ -3,16 +3,18 @@
 import hashlib
 import logging
 
-from logging.handlers import RotatingFileHandler
 from flask import Flask, request
 
 
 app = Flask(__name__)
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+
 
 @app.route("/", methods=["GET"])
 def hello_world():
+    app.logger.info("fuck from logger, {}".format(request.args))
+    app.logger.info("fuck from logger, {}".format(request.args))
+    print("fuck from print", request.args)
+    
     signature = request.args.get("signature", "")
     timestamp = request.args.get("timestamp", "")
     nonce = request.args.get("nonce", "")
@@ -32,7 +34,6 @@ def hello_world():
 
 @app.route("/", methods=["POST"])
 def receive_text():
-    logger.debug(request.form)
     to_user_name = request.form.get("ToUserName")
     from_user_name = request.form.get("FromUserName")
     create_time = request.form.get("CreateTime")
