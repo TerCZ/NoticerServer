@@ -4,7 +4,7 @@ from flask import Flask, request
 import hashlib
 
 app = Flask(__name__)
-
+app.logger.setLevel("DEBUG")
 
 @app.route("/", methods=["GET"])
 def hello_world():
