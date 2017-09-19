@@ -4,7 +4,7 @@ from flask import Flask, request
 import hashlib
 
 app = Flask(__name__)
-
+sha1 = hashlib.sha1()
 
 @app.route("/", methods=["GET"])
 def hello_world():
@@ -16,7 +16,6 @@ def hello_world():
 
     args = [token, timestamp, nonce]
     args.sort()
-    sha1 = hashlib.sha1()
     map(sha1.update, args)
     hashcode = sha1.hexdigest()
     if hashcode == signature:
