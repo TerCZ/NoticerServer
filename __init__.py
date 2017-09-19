@@ -28,8 +28,7 @@ def receive_text():
     msg_type = xmldata.find("MsgType").text
 
     if msg_type == "text":
-        content_encoded = xmldata.find("Content").text
-        content = bytes.fromhex(content_encoded.replace("\\x", "")).decode('utf-8')  # stupid wechat
+        content = xmldata.find("Content").text
         msg_id = xmldata.find("MsgId").text
 
         return default_reply(to_user=from_user_name, from_user=to_user_name)
