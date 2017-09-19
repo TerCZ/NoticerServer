@@ -1,9 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: <encoding name> -*-
 import logging
+import util
+
 
 from flask import Flask, request
-from util import is_from_wechat
+# from util import is_from_wechat
 
 app = Flask(__name__)
 
@@ -16,7 +18,7 @@ def hello_world():
 
     echostr = request.args.get("echostr", "")
 
-    if is_from_wechat(signature=signature, timestamp=timestamp, nonce=nonce):
+    if util.is_from_wechat(signature=signature, timestamp=timestamp, nonce=nonce):
         return echostr
     else:
         return "这不是微信请求呢"
