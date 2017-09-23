@@ -85,7 +85,7 @@ def deactivate_user(wechat_open_id):
         sql = "UPDATE User SET activated = FALSE WHERE wechat_open_id = %s"
         cursor.execute(sql, (wechat_open_id,))
         CONN.commit()
-        return "取消推送成功！"
+        return "取消推送成功。您可以发送 <推送 X> 再次打开X天为周期邮件推送。"
 
 
 def get_catalog():
@@ -223,7 +223,12 @@ def deal_message(wechat_open_id, message):
     elif message.startswith("来源"):
         return get_catalog()
     elif message.startswith("详情"):
-        return get_sites(school_id)
+        try:
+            _, school_id = message.split()
+            interval = int(school_id)
+            return get_sites(school_id)
+        except ValueError:
+            return "请按照 <详情 X> 格式发送信息，X为项目编号。您可以发送 <来源> 查看可用的消息来源。"
     elif message.startswith("订阅"):
         if len(message.split()) == 2:
             return subscribe(wechat_open_id, site_id)
