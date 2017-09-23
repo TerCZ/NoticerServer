@@ -116,7 +116,7 @@ def get_sites(school_id):
     sql = "SELECT site_name, site_id FROM Site WHERE school_id = %s"
     cursor.execute(sql, (school_id,))
 
-    reply = "{}目前提供以下项目：\n\n"
+    reply = "{}目前提供以下项目：\n\n".format(school_name)
     for entry in cursor.fetchall():
         name, site_id = entry
         reply += " - {}，{}\n".format(name, site_id)
