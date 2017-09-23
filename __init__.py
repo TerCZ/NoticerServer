@@ -24,6 +24,7 @@ app.config['MYSQL_DATABASE_HOST'] = CONFIG["Database"]["MYSQL_HOST"]
 MYSQL.init_app(app)
 CONN = MYSQL.connect()
 
+
 def save_message(wechat_open_id, message):
     cursor = CONN.cursor()
     cursor.execute("INSERT INTO WeChatMessage (wechat_open_id, message) VALUES (%s, %s)", (wechat_open_id, message))
@@ -34,10 +35,7 @@ def deal_message(wechat_open_id, message):
     save_message(wechat_open_id, message)
 
     cursor = CONN.cursor()
-    reply = "你的微信OpenID是：「{}」\n\n刚发送了：「{}」".format(wechat_open_id, message)
-
     if message.startswith("取消"):
-        logging.debug("deal with cancel")
         try:
             sql = "SELECT COUNT(*) FROM USER WHERE wechat_open_id = %s"
             cursor.execute(sql, (wechat_open_id,))
@@ -48,10 +46,12 @@ def deal_message(wechat_open_id, message):
                 sql = "UPDATE User SET activated = FALSE WHERE wechat_open_id = %s"
                 cursor.execute(sql, (wechat_open_id,))
                 reply = "取消推送成功！"
+
+            return reply
         except Exception as e:
             logging.error(e)
     elif message.startswith("订阅"):
-        logging.debug("deal with subscribe")
+
         try:
             _, interval = message.split()
             sql = "SELECT COUNT(*) FROM USER WHERE wechat_open_id = %s"
@@ -68,7 +68,7 @@ def deal_message(wechat_open_id, message):
         except Exception as e:
             logging.error(e)
     elif message.startswith("信息来源"):
-        logging.debug("deal with source")
+
         try:
             sql = "SELECT school_name, school_id FROM School"
             cursor.execute(sql)
@@ -81,7 +81,7 @@ def deal_message(wechat_open_id, message):
         except Exception as e:
             logging.error(e)
     elif message.startswith("邮箱"):
-        logging.debug("deal with email")
+
         try:
             _, email = message.split()
             sql = "SELECT COUNT(*) FROM USER WHERE wechat_open_id = %s"
@@ -98,7 +98,7 @@ def deal_message(wechat_open_id, message):
         except Exception as e:
             logging.error(e)
     else:
-        logging.debug("deal with unsupported")
+        reply = "你的微信OpenID是：「{}」\n\n刚发送了：「{}」".format(wechat_open_id, message)
         reply += "\n这是不支持的文本哦"
 
     CONN.commit()
