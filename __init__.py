@@ -208,8 +208,6 @@ def cancel_subscription(wechat_open_id, site_id):
 
 
 def deal_message(wechat_open_id, message):
-    save_message(wechat_open_id, message)
-
     if message.startswith("邮箱"):
         if len(message.split()) == 2:
             _, email = message.split()
@@ -256,6 +254,7 @@ def deal_message(wechat_open_id, message):
     elif message.startswith("管理"):
         return get_subscription(wechat_open_id)
     else:
+        save_message(wechat_open_id, message)
         return HELPER_INFO
 
 
