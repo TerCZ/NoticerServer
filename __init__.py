@@ -188,10 +188,14 @@ def cancel_subscription(wechat_open_id, site_id):
         return "您尚未注册邮箱，请发送 <邮箱 email_address> 注册邮箱。"
 
     cursor = CONN.cursor()
+    sql = "SELECT COUNT(*) FROM Subscription WHERE user_id = %s AND site_id = %s"
+    cursor.execute(sql, (user_id, site_id))
+    if cursor.fetchone()[0] == 0:
+        return "您尚未订阅该项目。"
+
     sql = "DELETE FROM Subscription WHERE user_id = %s AND site_id = %s"
     cursor.execute(sql, (user_id, site_id))
     CONN.commit()
-
     return "取消成功！"
 
 
@@ -216,12 +220,15 @@ def deal_message(wechat_open_id, message):
         except ValueError:
             return "请按照 <推送 X> 格式发送信息，X为推送周期（天）。"
     elif message.startswith("取消"):
+        if message == "取消":
+            return deactivate_user(wechat_open_id)
+
         try:
             _, site_id = message.split()
             site_id = int(site_id)
             return cancel_subscription(wechat_open_id, site_id)
         except ValueError:
-            return deactivate_user(wechat_open_id)
+            return "请按照 <取消 X> 格式发送信息，X为项目编号。"
     elif message.startswith("来源"):
         return get_catalog()
     elif message.startswith("详情"):
