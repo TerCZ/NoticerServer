@@ -26,7 +26,7 @@ mysql.init_app(app)
 
 def save_message(wechat_open_id, message):
     cursor = mysql.get_db().cursor()
-    cursor.execute("INSERT INTO WeChatMessage (wechat_open_id, message) VALUES (%s, %s)", wechat_open_id, message)
+    cursor.execute("INSERT INTO WeChatMessage (wechat_open_id, message) VALUES (%s, %s)", (wechat_open_id, message))
     cursor.commit()
 
 
