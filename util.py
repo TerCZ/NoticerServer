@@ -7,7 +7,7 @@ from time import time
 
 TOKEN = "LongAsHeLives"
 DEFAULT_PROMPT = \
-"""欢迎使用SJTU Noticer校园信息订阅服务！在公众号管理您的订阅，我们将为您定期通过邮件推送最新校园通知。
+"""欢迎使用SJTU Noticer校园信息订阅服务！通过SJTU Noticer，您可以自主选择订阅内容（X院学生办、Y院团委等）。我们将为您通过邮件，定期推送最新校园通知。
 
 您可以发送以下消息进行操作：
 <邮箱 email_address>，注册或更新您的邮箱
