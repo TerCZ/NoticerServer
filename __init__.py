@@ -53,7 +53,7 @@ def set_interval(wechat_open_id, interval):
     if cursor.fetchone()[0] == 0:  # not register email yet
         return "您尚未注册邮箱，发送「邮箱 email_address」进行注册！"
     else:  # update user
-        sql = "UPDATE User SET sending_interval = %s WHERE wechat_open_id = %s"
+        sql = "UPDATE User SET activated = TRUE, sending_interval = %s WHERE wechat_open_id = %s"
         cursor.execute(sql, (interval, wechat_open_id))
         CONN.commit()
         return "更新推送周期为{}天！".format(interval)
@@ -98,7 +98,7 @@ def deal_message(wechat_open_id, message):
         try:
             _, interval = message.split()
             return set_interval(wechat_open_id, int(interval))
-        except Exception as e:
+        except ValueError as e:
             return "请按照「订阅 X」格式发送信息，X为推送周期（天）。"
     elif message.startswith("信息来源"):
         return get_catalog()
@@ -106,7 +106,7 @@ def deal_message(wechat_open_id, message):
         try:
             _, email = message.split()
             return set_email(email)
-        except Exception as e:
+        except ValueError as e:
             return "请按照「订阅 email_address」格式发送信息。"
     elif message.startswith("详情"):
         return "功能尚未实现呢"
