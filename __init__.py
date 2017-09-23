@@ -3,6 +3,7 @@
 import configparser
 import logging
 import os
+import re
 import xml.etree.ElementTree as ET
 
 from . import util
@@ -200,6 +201,8 @@ def deal_message(wechat_open_id, message):
     if message.startswith("邮箱"):
         if len(message.split()) == 2:
             _, email = message.split()
+            if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+                return "请发送合法的邮箱地址。"
             return set_email(wechat_open_id, email)
         else:
             return "请按照 <邮件 email_address> 格式发送信息。"
