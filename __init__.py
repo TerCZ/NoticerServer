@@ -131,7 +131,7 @@ def subscribe(wechat_open_id, site_id):
     sql = "SELECT site_name FROM Site WHERE site_id = %s"
     cursor.execute(sql, (site_id,))
     site = cursor.fetchall()
-    if len(site) != 0:
+    if len(site) != 1:
         return "请输入正确的编号。您可以发送 <来源> 查看所有信息来源。"
     site_name = site[0][0]
 
@@ -216,9 +216,11 @@ def deal_message(wechat_open_id, message):
         except ValueError:
             return "请按照 <推送 X> 格式发送信息，X为推送周期（天）。"
     elif message.startswith("取消"):
-        if len(message.split()) == 2:
+        try:
+            _, site_id = message.split()
+            site_id = int(site_id)
             return cancel_subscription(wechat_open_id, site_id)
-        else:
+        except ValueError:
             return deactivate_user(wechat_open_id)
     elif message.startswith("来源"):
         return get_catalog()
