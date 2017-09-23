@@ -51,7 +51,7 @@ def set_email(wechat_open_id, email):
         sql = "INSERT INTO User (wechat_open_id, email) VALUES (%s, %s)"
         cursor.execute(sql, (wechat_open_id, email))
         CONN.commit()
-        return "注册邮箱{}成功！\n默认推送周期为7天，发送 <推送 X> 更新为X天。\n您可以发送 <来源> 查看并订阅信息。".format(email)
+        return "注册邮箱{}成功！\n\n默认推送周期为7天，发送 <推送 X> 更新为X天。您可以发送 <来源> 查看并订阅信息。".format(email)
     else:  # update user
         sql = "UPDATE User SET email = %s WHERE wechat_open_id = %s"
         cursor.execute(sql, (email, wechat_open_id))
@@ -171,7 +171,7 @@ def get_subscription(wechat_open_id):
             result[school_name].append((site_name, site_id))
 
     reply = "您目前的订阅有：\n\n"
-    for item = result.items():
+    for item in result.items():
         reply += item[0] + "\n"
         for site in item[1]:
             reply += " - {}，{}\n".format(site[0], site[1])
@@ -200,14 +200,14 @@ def deal_message(wechat_open_id, message):
     if message.startswith("邮箱"):
         if len(message.split()) == 2:
             _, email = message.split()
-            return set_email(email)
+            return set_email(wechat_open_id, email)
         else:
             return "请按照 <邮件 email_address> 格式发送信息。"
     elif message.startswith("推送"):
-        if len(message.split()) == 2:
+        try:
             _, interval = message.split()
             return set_interval(wechat_open_id, int(interval))
-        else:
+        except ValueError:
             return "请按照 <推送 X> 格式发送信息，X为推送周期（天）。"
     elif message.startswith("取消"):
         if len(message.split()) == 2:
