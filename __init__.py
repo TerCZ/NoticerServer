@@ -35,7 +35,9 @@ def deal_message(wechat_open_id, message):
 
     cursor = CONN.cursor()
     reply = "你的微信OpenID是：「{}」\n\n刚发送了：「{}」".format(wechat_open_id, message)
+
     if message.startswith("取消"):
+        logging.debug("deal with cancel")
         try:
             sql = "SELECT COUNT(*) FROM USER WHERE wechat_open_id = %s"
             cursor.execute(sql, (wechat_open_id,))
@@ -55,7 +57,7 @@ def deal_message(wechat_open_id, message):
             cursor.execute(sql, (wechat_open_id,))
 
             if cursor.fetchone()[0] == 0:  # not register email yet
-                reply = "您尚未注册邮箱，发送「邮箱 email_address」进行注册！")
+                reply = "您尚未注册邮箱，发送「邮箱 email_address」进行注册！"
             else:  # update user
                 sql = "UPDATE User SET sending_interval = %s WHERE wechat_open_id = %s"
                 cursor.execute(sql, (interval, wechat_open_id))
@@ -70,7 +72,7 @@ def deal_message(wechat_open_id, message):
             cursor.execute(sql)
 
             reply = "SJTU Noticer目前提供以下信息分类：\n"
-            for entry in cursor.fetchall()
+            for entry in cursor.fetchall():
                 name, school_id = entry
                 reply += "\t{}，{}\n".format(name, school_id)
             reply += "\n发送「详情 X」查看该类别提供的具体项目，X为类别后面的数字"
