@@ -26,12 +26,12 @@ MYSQL.init_app(app)
 CONN = MYSQL.connect()
 
 HELPER_INFO = \
-"""您可以发送以下消息进行操作：
-<邮箱 email_address>，注册或更新您的邮箱
-<推送 X>，打开邮件推送并设置周期为X天
-<取消>，取消邮件推送
-<来源>，查看可用的信息来源
-<管理>，查看并管理订阅内容"""
+"""您可以发送以下引号内消息进行操作：
+“邮箱 email_address”，注册或更新您的邮箱
+“推送 X”，打开邮件推送并设置周期为X天
+“取消”，取消邮件推送
+“来源”，查看可用的信息来源
+“管理”，查看并管理订阅内容"""
 
 
 def wechat_open_id_to_user_id(wechat_open_id):
@@ -60,7 +60,7 @@ def set_email(wechat_open_id, email):
         sql = "INSERT INTO User (wechat_open_id, email) VALUES (%s, %s)"
         cursor.execute(sql, (wechat_open_id, email))
         CONN.commit()
-        return "注册邮箱{}成功！\n\n默认推送周期为7天，发送 <推送 X> 更新为X天。您可以发送 <来源> 查看并订阅信息。".format(email)
+        return "注册邮箱{}成功！\n\n默认推送周期为7天，发送 “推送 X” 更新为X天。您可以发送 “来源” 查看并订阅信息。".format(email)
     else:  # update user
         sql = "UPDATE User SET email = %s WHERE wechat_open_id = %s"
         cursor.execute(sql, (email, wechat_open_id))
@@ -74,7 +74,7 @@ def set_interval(wechat_open_id, interval):
     cursor.execute(sql, (wechat_open_id,))
 
     if cursor.fetchone()[0] == 0:  # not register email yet
-        return "您尚未注册邮箱，发送 <邮箱 email_address> 进行注册！"
+        return "您尚未注册邮箱，发送 “邮箱 email_address” 进行注册！"
     else:  # update user
         sql = "UPDATE User SET activated = TRUE, sending_interval = %s WHERE wechat_open_id = %s"
         cursor.execute(sql, (interval, wechat_open_id))
@@ -88,12 +88,12 @@ def deactivate_user(wechat_open_id):
     cursor.execute(sql, (wechat_open_id,))
 
     if cursor.fetchone()[0] == 0:  # not register email yet
-        return "您尚未注册邮箱，发送 <邮箱 email_address> 进行注册！"
+        return "您尚未注册邮箱，发送 “邮箱 email_address” 进行注册！"
     else:  # update user
         sql = "UPDATE User SET activated = FALSE WHERE wechat_open_id = %s"
         cursor.execute(sql, (wechat_open_id,))
         CONN.commit()
-        return "取消推送成功。您可以发送 <推送 X> 再次打开X天为周期邮件推送。"
+        return "取消推送成功。您可以发送 “推送 X” 再次打开X天为周期邮件推送。"
 
 
 def get_catalog():
@@ -105,7 +105,7 @@ def get_catalog():
     for entry in cursor.fetchall():
         name, school_id = entry
         reply += " - {}，{}\n".format(name, school_id)
-    reply += "\n发送 <详情 X> 查看具体项目，X为类别后的编号"
+    reply += "\n发送 “详情 X” 查看具体项目，X为类别后的编号"
     return reply
 
 
@@ -117,7 +117,7 @@ def get_sites(school_id):
     cursor.execute(sql, (school_id,))
     school = cursor.fetchall()
     if len(school) != 1:
-        return "请输入正确的编号。您可以发送 <来源> 查看所有信息来源。"
+        return "请输入正确的编号。您可以发送 “来源” 查看所有信息来源。"
     school_name = school[0][0]
 
     # get all the sites
@@ -128,7 +128,7 @@ def get_sites(school_id):
     for entry in cursor.fetchall():
         name, site_id = entry
         reply += " - {}，{}\n".format(name, site_id)
-    reply += "\n发送 <订阅 X> 订阅具体项目，X为项目后的编号"
+    reply += "\n发送 “订阅 X” 订阅具体项目，X为项目后的编号"
     return reply
 
 
@@ -140,13 +140,13 @@ def subscribe(wechat_open_id, site_id):
     cursor.execute(sql, (site_id,))
     site = cursor.fetchall()
     if len(site) != 1:
-        return "请输入正确的编号。您可以发送 <来源> 查看所有信息来源。"
+        return "请输入正确的编号。您可以发送 “来源” 查看所有信息来源。"
     site_name = site[0][0]
 
     # get user_id
     user_id = wechat_open_id_to_user_id(wechat_open_id)
     if user_id is None:
-        return "您尚未注册邮箱，请发送 <邮箱 email_address> 注册邮箱。"
+        return "您尚未注册邮箱，请发送 “邮箱 email_address” 注册邮箱。"
 
     # subscribe
     sql = "SELECT COUNT(*) FROM Subscription WHERE user_id = %s AND site_id = %s"
@@ -163,7 +163,7 @@ def get_subscription(wechat_open_id):
     # get user_id
     user_id = wechat_open_id_to_user_id(wechat_open_id)
     if user_id is None:
-        return "您尚未注册邮箱，请发送 <邮箱 email_address> 注册邮箱。"
+        return "您尚未注册邮箱，请发送 “邮箱 email_address” 注册邮箱。"
 
     cursor = CONN.cursor()
     sql = """SELECT school_name, site_name, site_id
@@ -184,7 +184,7 @@ def get_subscription(wechat_open_id):
         reply += item[0] + "\n"
         for site in item[1]:
             reply += " - {}，{}\n".format(site[0], site[1])
-    reply += "\n发送 <取消 X> 取消编号为X的项目，发送 <来源> 查看更多消息来源。"
+    reply += "\n发送 “取消 X” 取消编号为X的项目，发送 “来源” 查看更多消息来源。"
 
     return reply
 
@@ -193,7 +193,7 @@ def cancel_subscription(wechat_open_id, site_id):
     # get user_id
     user_id = wechat_open_id_to_user_id(wechat_open_id)
     if user_id is None:
-        return "您尚未注册邮箱，请发送 <邮箱 email_address> 注册邮箱。"
+        return "您尚未注册邮箱，请发送 “邮箱 email_address” 注册邮箱。"
 
     cursor = CONN.cursor()
     sql = "SELECT COUNT(*) FROM Subscription WHERE user_id = %s AND site_id = %s"
@@ -215,7 +215,7 @@ def deal_message(wechat_open_id, message):
                 return "请使用合法的邮箱地址。"
             return set_email(wechat_open_id, email)
         else:
-            return "请按照 <邮件 email_address> 格式发送信息。"
+            return "请按照 “邮件 email_address” 格式发送信息。"
     elif message.startswith("推送"):
         try:
             _, interval = message.split()
@@ -224,7 +224,7 @@ def deal_message(wechat_open_id, message):
                 return "请使用正数周期。"
             return set_interval(wechat_open_id, interval)
         except ValueError:
-            return "请按照 <推送 X> 格式发送信息，X为推送周期（天）。"
+            return "请按照 “推送 X” 格式发送信息，X为推送周期（天）。"
     elif message.startswith("取消"):
         if message == "取消":
             return deactivate_user(wechat_open_id)
@@ -234,7 +234,7 @@ def deal_message(wechat_open_id, message):
             site_id = int(site_id)
             return cancel_subscription(wechat_open_id, site_id)
         except ValueError:
-            return "请按照 <取消 X> 格式发送信息，X为项目编号。"
+            return "请按照 “取消 X” 格式发送信息，X为项目编号。"
     elif message.startswith("来源"):
         return get_catalog()
     elif message.startswith("详情"):
@@ -243,14 +243,14 @@ def deal_message(wechat_open_id, message):
             school_id = int(school_id)
             return get_sites(school_id)
         except ValueError:
-            return "请按照 <详情 X> 格式发送信息，X为项目编号。您可以发送 <来源> 查看可用的消息来源。"
+            return "请按照 “详情 X” 格式发送信息，X为项目编号。您可以发送 “来源” 查看可用的消息来源。"
     elif message.startswith("订阅"):
         try:
             _, site_id = message.split()
             site_id = int(site_id)
             return subscribe(wechat_open_id, site_id)
         except ValueError:
-            return "请按照 <订阅 X> 格式发送信息，X项目编号。您可以发送 <来源> 查看可用的消息来源。"
+            return "请按照 “订阅 X” 格式发送信息，X项目编号。您可以发送 “来源” 查看可用的消息来源。"
     elif message.startswith("管理"):
         return get_subscription(wechat_open_id)
     else:
