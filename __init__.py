@@ -25,6 +25,14 @@ app.config['MYSQL_DATABASE_HOST'] = CONFIG["Database"]["MYSQL_HOST"]
 MYSQL.init_app(app)
 CONN = MYSQL.connect()
 
+HELPER_INFO = \
+"""您可以发送以下消息进行操作：
+<邮箱 email_address>，注册或更新您的邮箱
+<推送 X>，打开邮件推送并设置周期为X天
+<取消>，取消邮件推送
+<来源>，查看可用的信息来源
+<管理>，查看并管理订阅内容"""
+
 
 def wechat_open_id_to_user_id(wechat_open_id):
     cursor = CONN.cursor()
@@ -248,7 +256,7 @@ def deal_message(wechat_open_id, message):
     elif message.startswith("管理"):
         return get_subscription(wechat_open_id)
     else:
-        return "你的微信OpenID是： <{}> \n刚发送了： <{}> \n这是不支持的文本哦".format(wechat_open_id, message)
+        return HELPER_INFO
 
 
 @app.route("/", methods=["GET"])
