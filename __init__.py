@@ -33,7 +33,7 @@ def save_message(wechat_open_id, message):
 
 def deactivate_user(wechat_open_id):
     cursor = CONN.cursor()
-    sql = "SELECT COUNT(*) FROM USER WHERE wechat_open_id = %s"
+    sql = "SELECT COUNT(*) FROM User WHERE wechat_open_id = %s"
     cursor.execute(sql, (wechat_open_id,))
 
     if cursor.fetchone()[0] == 0:  # not register email yet
@@ -47,7 +47,7 @@ def deactivate_user(wechat_open_id):
 
 def set_interval(wechat_open_id, interval):
     cursor = CONN.cursor()
-    sql = "SELECT COUNT(*) FROM USER WHERE wechat_open_id = %s"
+    sql = "SELECT COUNT(*) FROM User WHERE wechat_open_id = %s"
     cursor.execute(sql, (wechat_open_id,))
 
     if cursor.fetchone()[0] == 0:  # not register email yet
@@ -67,21 +67,21 @@ def get_catalog():
     reply = "SJTU Noticer目前提供以下信息分类：\n"
     for entry in cursor.fetchall():
         name, school_id = entry
-        reply += "\t{}，{}\n".format(name, school_id)
-    reply += "\n发送「详情 X」查看该类别提供的具体项目，X为类别后面的数字"
+        reply += " - {}，{}\n".format(name, school_id)
+    reply += "\n发送「详情 X」查看具体项目，X为类别后的数字"
     return reply
 
 
 def set_email(wechat_open_id, email):
     cursor = CONN.cursor()
-    sql = "SELECT COUNT(*) FROM USER WHERE wechat_open_id = %s"
+    sql = "SELECT COUNT(*) FROM User WHERE wechat_open_id = %s"
     cursor.execute(sql, (wechat_open_id,))
 
     if cursor.fetchone()[0] == 0:  # create user
         sql = "INSERT INTO User (wechat_open_id, email) VALUES (%s, %s)"
         cursor.execute(sql, (wechat_open_id, email))
         CONN.commit()
-        return = "注册邮箱{}成功！\n默认推送周期为7天，您可通过发送「订阅 X」更新为X天。\n您可通过发送「信息来源」查看并订阅校园信息。".format(email)
+        return "注册邮箱{}成功！\n默认推送周期为7天，您可通过发送「订阅 X」更新为X天。\n您可通过发送「信息来源」查看并订阅校园信息。".format(email)
     else:  # update user
         sql = "UPDATE User SET email = %s WHERE wechat_open_id = %s"
         cursor.execute(sql, (email, wechat_open_id))
@@ -97,7 +97,7 @@ def deal_message(wechat_open_id, message):
     elif message.startswith("订阅"):
         try:
             _, interval = message.split()
-            return set_interval(wechat_open_id=, int(interval))
+            return set_interval(wechat_open_id, int(interval))
         except Exception as e:
             return "请按照「订阅 X」格式发送信息，X为推送周期（天）。"
     elif message.startswith("信息来源"):
