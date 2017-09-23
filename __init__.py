@@ -202,14 +202,17 @@ def deal_message(wechat_open_id, message):
         if len(message.split()) == 2:
             _, email = message.split()
             if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-                return "请发送合法的邮箱地址。"
+                return "请使用合法的邮箱地址。"
             return set_email(wechat_open_id, email)
         else:
             return "请按照 <邮件 email_address> 格式发送信息。"
     elif message.startswith("推送"):
         try:
             _, interval = message.split()
-            return set_interval(wechat_open_id, int(interval))
+            interval = int(interval)
+            if interval <= 0:
+                return "请使用正数周期。"
+            return set_interval(wechat_open_id, interval)
         except ValueError:
             return "请按照 <推送 X> 格式发送信息，X为推送周期（天）。"
     elif message.startswith("取消"):
