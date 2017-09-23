@@ -225,14 +225,16 @@ def deal_message(wechat_open_id, message):
     elif message.startswith("详情"):
         try:
             _, school_id = message.split()
-            interval = int(school_id)
+            school_id = int(school_id)
             return get_sites(school_id)
         except ValueError:
             return "请按照 <详情 X> 格式发送信息，X为项目编号。您可以发送 <来源> 查看可用的消息来源。"
     elif message.startswith("订阅"):
-        if len(message.split()) == 2:
+        try:
+            _, site_id = message.split()
+            site_id = int(site_id)
             return subscribe(wechat_open_id, site_id)
-        else:
+        except ValueError:
             return "请按照 <订阅 X> 格式发送信息，X项目编号。您可以发送 <来源> 查看可用的消息来源。"
     elif message.startswith("管理"):
         return get_subscription(wechat_open_id)
