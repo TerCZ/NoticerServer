@@ -16,18 +16,18 @@ CONFIG = configparser.ConfigParser()
 CONFIG.read(os.path.dirname(os.path.realpath(__file__)) + "/config")
 
 # initialize mysql
-mysql = MySQL()
+MYSQL = MySQL()
 app.config['MYSQL_DATABASE_USER'] = CONFIG["Database"]["MYSQL_USER"]
 app.config['MYSQL_DATABASE_PASSWORD'] = CONFIG["Database"]["MYSQL_PWD"]
 app.config['MYSQL_DATABASE_DB'] = CONFIG["Database"]["MYSQL_DB"]
 app.config['MYSQL_DATABASE_HOST'] = CONFIG["Database"]["MYSQL_HOST"]
-mysql.init_app(app)
-
+MYSQL.init_app(app)
+CONN = MYSQL.connect()
 
 def save_message(wechat_open_id, message):
-    cursor = mysql.get_db().cursor()
+    cursor = CONN.cursor()
     cursor.execute("INSERT INTO WeChatMessage (wechat_open_id, message) VALUES (%s, %s)", (wechat_open_id, message))
-    cursor.commit()
+    CONN.commit()
 
 
 def deal_message(wechat_open_id, message):
