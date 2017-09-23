@@ -108,7 +108,7 @@ def get_sites(school_id):
     sql = "SELECT school_name FROM School WHERE school_id = %s"
     cursor.execute(sql, (school_id,))
     school = cursor.fetchall()
-    if len(school) != 0:
+    if len(school) != 1:
         return "请输入正确的编号。您可以发送 <来源> 查看所有信息来源。"
     school_name = school[0][0]
 
