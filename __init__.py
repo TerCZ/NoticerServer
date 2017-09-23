@@ -51,6 +51,7 @@ def deal_message(wechat_open_id, message):
         except Exception as e:
             logging.error(e)
     elif message.startswith("订阅"):
+        logging.debug("deal with subscribe")
         try:
             _, interval = message.split()
             sql = "SELECT COUNT(*) FROM USER WHERE wechat_open_id = %s"
@@ -67,6 +68,7 @@ def deal_message(wechat_open_id, message):
         except Exception as e:
             logging.error(e)
     elif message.startswith("信息来源"):
+        logging.debug("deal with source")
         try:
             sql = "SELECT school_name, school_id FROM School"
             cursor.execute(sql)
@@ -79,6 +81,7 @@ def deal_message(wechat_open_id, message):
         except Exception as e:
             logging.error(e)
     elif message.startswith("邮箱"):
+        logging.debug("deal with email")
         try:
             _, email = message.split()
             sql = "SELECT COUNT(*) FROM USER WHERE wechat_open_id = %s"
@@ -94,9 +97,11 @@ def deal_message(wechat_open_id, message):
                 reply = "更新邮箱为{}！".format(email)
         except Exception as e:
             logging.error(e)
+    else:
+        logging.debug("deal with unsupported")
+        reply += "\n这是不支持的文本哦"
 
     CONN.commit()
-
     return reply
 
 
