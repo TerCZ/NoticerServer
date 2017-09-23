@@ -41,14 +41,14 @@ def deal_message(wechat_open_id, message):
             cursor.execute(sql, (wechat_open_id,))
 
             if cursor.fetchone()[0] == 0:  # not register email yet
-                reply = "您尚未注册邮箱，发送「邮箱 email_address」进行注册！")
+                reply = "您尚未注册邮箱，发送「邮箱 email_address」进行注册！"
             else:  # update user
                 sql = "UPDATE User SET activated = FALSE WHERE wechat_open_id = %s"
                 cursor.execute(sql, (wechat_open_id,))
                 reply = "取消推送成功！"
         except Exception as e:
             logging.error(e)
-    else if message.startswith("订阅"):
+    elif message.startswith("订阅"):
         try:
             _, interval = message.split()
             sql = "SELECT COUNT(*) FROM USER WHERE wechat_open_id = %s"
@@ -64,7 +64,7 @@ def deal_message(wechat_open_id, message):
             cursor.execute(sql, (interval, wechat_open_id))
         except Exception as e:
             logging.error(e)
-    else if message.startswith("信息来源"):
+    elif message.startswith("信息来源"):
         try:
             sql = "SELECT school_name, school_id FROM School"
             cursor.execute(sql)
@@ -76,7 +76,7 @@ def deal_message(wechat_open_id, message):
             reply += "\n发送「详情 X」查看该类别提供的具体项目，X为类别后面的数字"
         except Exception as e:
             logging.error(e)
-    else if message.startswith("邮箱"):
+    elif message.startswith("邮箱"):
         try:
             _, email = message.split()
             sql = "SELECT COUNT(*) FROM USER WHERE wechat_open_id = %s"
