@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# -*- coding: <encoding name> -*-
+# -*- coding: utf8 -*-
 import logging
 import xml.etree.ElementTree as ET
 
