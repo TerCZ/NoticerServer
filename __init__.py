@@ -1,18 +1,33 @@
 #!/usr/bin/python3
 # -*- coding: utf8 -*-
+import configparser
 import logging
+import os
 import xml.etree.ElementTree as ET
 
 from . import util
 from flask import Flask, request
-
+from flask.ext.mysql import MySQL
 
 app = Flask(__name__)
 
+# read config
+CONFIG = configparser.ConfigParser()
+CONFIG.read(os.path.dirname(os.path.realpath(__file__)) + "/config")
+
+# initialize mysql
+mysql = MySQL()
+app.config['MYSQL_DATABASE_USER'] = CONFIG["Database"]["MYSQL_USER"]
+app.config['MYSQL_DATABASE_PASSWORD'] = CONFIG["Database"]["MYSQL_PWD"]
+app.config['MYSQL_DATABASE_DB'] = CONFIG["Database"]["MYSQL_DB"]
+app.config['MYSQL_DATABASE_HOST'] = CONFIG["Database"]["MYSQL_HOST"]
+mysql.init_app(app)
+
 
 def save_message(wechat_open_id, message):
-    # todo
-    pass
+    cursor = mysql.get_db().cursor()
+    cursor.execute("INSERT INTO WeChatMessage (wechat_open_id, message) VALUES (%s, %s)", wechat_open_id, message)
+    cursor.commit()
 
 
 def deal_message(wechat_open_id, message):
