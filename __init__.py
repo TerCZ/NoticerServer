@@ -45,9 +45,9 @@ def wechat_open_id_to_user_id(wechat_open_id):
         return user[0][0]
 
 
-def save_message(wechat_open_id, message):
+def save_message(wechat_open_id, message, inbound=True):
     cursor = CONN.cursor()
-    cursor.execute("INSERT INTO WeChatMessage (wechat_open_id, message) VALUES (%s, %s)", (wechat_open_id, message))
+    cursor.execute("INSERT INTO WeChatMessage (wechat_open_id, message, inbound) VALUES (%s, %s, %s)", (wechat_open_id, message, inbound))
     CONN.commit()
 
 
@@ -207,6 +207,16 @@ def cancel_subscription(wechat_open_id, site_id):
     return "取消成功！"
 
 
+def log_message(dealer):
+    def wrapper_dealer(*args, **kwargs):
+        save_message(args[0], args[1], inbound=True)
+        reply = dealer(*args, **kwargs)
+        save_message(args[0], reply, inbound=False)
+        return reply
+    return wrapper_dealer
+
+
+@log_message
 def deal_message(wechat_open_id, message):
     if message.startswith("邮箱"):
         if len(message.split()) == 2:
@@ -254,8 +264,9 @@ def deal_message(wechat_open_id, message):
     elif message.startswith("管理"):
         return get_subscription(wechat_open_id)
     else:
-        save_message(wechat_open_id, message)
         return HELPER_INFO
+
+
 
 
 @app.route("/", methods=["GET"])
