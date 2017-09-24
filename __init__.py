@@ -105,7 +105,7 @@ def deactivate_user(wechat_open_id):
         sql = "UPDATE User SET activated = FALSE WHERE wechat_open_id = %s"
         cursor.execute(sql, (wechat_open_id,))
         CONN.commit()
-        return "取消推送成功。您可以发送 “推送 X” 再次打开X天为周期邮件推送。"
+        return "取消推送成功。您可以发送 “推送 X” 再次打开X天为周期的邮件推送。"
 
 
 def get_catalog():
@@ -175,25 +175,33 @@ def get_subscription(wechat_open_id):
         return "您尚未注册邮箱，请发送 “邮箱 email_address” 注册邮箱。"
 
     cursor = CONN.cursor()
-    sql = """SELECT school_name, site_name, site_id
-             FROM Subscription JOIN Site USING (site_id) JOIN School USING (school_id)
-             WHERE user_id = %s
-             ORDER BY school_name ASC"""
-    cursor.execute(sql, (user_id,))
-    result = {}
-    for entry in cursor.fetchall():
-        school_name, site_name, site_id = entry
-        if school_name not in result:
-            result[school_name] = [(site_name, site_id)]
-        else:
-            result[school_name].append((site_name, site_id))
+    sql = "SELECT sending_interval, activated FROM User WHERE wechat_open_id = %s"
+    cursor.execute(sql, (wechat_open_id,))
+    interval, activated = cursor.fetchone()
+    if activated:
+        reply = "您的推送周期为{}天，目前订阅了：\n\n".format(interval)
 
-    reply = "您目前的订阅有：\n\n"
-    for item in result.items():
-        reply += item[0] + "\n"
-        for site in item[1]:
-            reply += " - {}，{}\n".format(site[0], site[1])
-    reply += "\n发送 “取消 X” 取消编号为X的项目，发送 “来源” 查看更多消息来源。"
+        sql = """SELECT school_name, site_name, site_id
+                 FROM Subscription JOIN Site USING (site_id) JOIN School USING (school_id)
+                 WHERE user_id = %s
+                 ORDER BY school_name ASC"""
+        cursor.execute(sql, (user_id,))
+        result = {}
+        for entry in cursor.fetchall():
+            school_name, site_name, site_id = entry
+            if school_name not in result:
+                result[school_name] = [(site_name, site_id)]
+            else:
+                result[school_name].append((site_name, site_id))
+
+
+        for item in result.items():
+            reply += item[0] + "\n"
+            for site in item[1]:
+                reply += " - {}，{}\n".format(site[0], site[1])
+        reply += "\n发送 “取消” 取消邮件推送，发送 “推送 X” 更新推送周期为X天，发送 “取消 X” 取消编号为X的项目，发送 “来源” 查看更多消息来源。"
+    else:
+        reply = "您已取消邮件推送，发送 “推送 X” 再次打开X天为周期的邮件推送，发送 “来源” 查看更多消息来源。"
 
     return reply
 
