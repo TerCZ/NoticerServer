@@ -45,9 +45,21 @@ def wechat_open_id_to_user_id(wechat_open_id):
         return user[0][0]
 
 
+def site_id_to_site_name(site_id):
+    cursor = CONN.cursor()
+    sql = "SELECT site_name FROM Site WHERE site_id = %s"
+    cursor.execute(sql, (site_id,))
+    site = cursor.fetchall()
+    if len(site) != 1:
+        return None
+    else:
+        return site[0][0]
+
+
 def save_message(wechat_open_id, message, inbound=True):
     cursor = CONN.cursor()
-    cursor.execute("INSERT INTO WeChatMessage (wechat_open_id, message, inbound) VALUES (%s, %s, %s)", (wechat_open_id, message, inbound))
+    cursor.execute("INSERT INTO WeChatMessage (wechat_open_id, message, inbound) VALUES (%s, %s, %s)",
+                   (wechat_open_id, message, inbound))
     CONN.commit()
 
 
@@ -136,12 +148,9 @@ def subscribe(wechat_open_id, site_id):
     cursor = CONN.cursor()
 
     # check site id
-    sql = "SELECT site_name FROM Site WHERE site_id = %s"
-    cursor.execute(sql, (site_id,))
-    site = cursor.fetchall()
-    if len(site) != 1:
+    site_name = site_id_to_site_name(site_id)
+    if site_name is None:
         return "请输入正确的编号。您可以发送 “来源” 查看所有信息来源。"
-    site_name = site[0][0]
 
     # get user_id
     user_id = wechat_open_id_to_user_id(wechat_open_id)
@@ -265,8 +274,6 @@ def deal_message(wechat_open_id, message):
         return get_subscription(wechat_open_id)
     else:
         return HELPER_INFO
-
-
 
 
 @app.route("/", methods=["GET"])
